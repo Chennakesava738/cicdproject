@@ -13,14 +13,14 @@ pipeline{
         stage("maven Build"){
          steps{
             sh "mvn clean package"
-            sh "mv target/*.war target/myweb.war"
+            sh "mv target/*.war target/cicdproject.war"
             }
         }
         stage("deploy-dev"){
             steps{
                 sshagent(['tomcat-old']){
                     sh """
-                    scp -o StrictHostKeyChecking=no taget/myweb.war ssh ubuntu@172.31.86.194:/home/ubuntu/apache-tomcat-9.0.65/webapps/
+                    scp -o StrictHostKeyChecking=no taget/cicdproject.war ssh ubuntu@172.31.86.194:/home/ubuntu/apache-tomcat-9.0.65/webapps/
  
                     ssh ubuntu@172.31.86.194 /home/ubuntu/apache-tomcat-9.0.65/bin/shutdown.sh
 
