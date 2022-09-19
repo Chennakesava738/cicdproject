@@ -1,2 +1,36 @@
+pipeline{
+   agent any
+   
+   environment{
+      PATH = "/opt/maven3/bin:$PATH"
+      }
+      stages{
+        stage("Git checkout"){
+            steps{
+               git branch: 'main', credentialsId: 'jenkiscicdproject', url: 'https://github.com/Chennakesava738/cicdproject.git'
+            }
+        }
+        stage("maven Build"){
+         steps{
+            sh "mvn clean package"
+            sh "mv target/*.war target/myweb.war"
+            }
+        }
+        stage("deploy-dev"){
+            steps{
+                sshagent(['tomcat-old']){
+                    sh """
+                    scp -o StrictHostKeyChecking=no taget/myweb.war ssh ubuntu@172.31.86.194:/home/ubuntu/apache-tomcat-9.0.65/webapps/
+ 
+                    ssh ubuntu@172.31.86.194 /home/ubuntu/apache-tomcat-9.0.65/bin/shutdown.sh
 
+                    ssh ubuntu@172.31.86.194 /home/ubuntu/apache-tomcat-9.0.65/bin/startup.sh
+
+                    """
+                }                    
+ 
+            }
+       }
+   }
+} 
       
